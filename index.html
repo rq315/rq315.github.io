@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历投递</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+                margin: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form {
+            padding: 30px 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.5L8.5 6L11 8.5 6 10L6 8.5Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .file-upload:hover {
+            background: #e8ebff;
+            border-color: #5568d3;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-upload-hint {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .selected-file {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8ebff;
+            border-radius: 8px;
+            color: #667eea;
+            font-size: 14px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .success-text {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .error-message {
+            display: none;
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 简历投递</h1>
+            <p>扫码填写简历，选择公司投递</p>
+        </div>
+
+        <div class="form" id="resumeForm">
+            <div class="error-message" id="errorMessage"></div>
+
+            <form id="form">
+                <div class="form-group">
+                    <label for="companyIds">选择公司 *</label>
+                    <select id="companyIds" name="companyIds" required>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">姓名 *</label>
+                    <input type="text" id="name" name="name" required placeholder="请输入您的姓名">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">联系电话 *</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="请输入手机号码">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱 *</label>
+                    <input type="email" id="email" name="email" required placeholder="请输入邮箱地址">
+                </div>
+
+                <div class="form-group">
+                    <label for="position">应聘职位</label>
+                    <input type="text" id="position" name="position" placeholder="请输入应聘职位">
+                </div>
+
+                <div class="form-group">
+                    <label for="education">学历</label>
+                    <select id="education" name="education">
+                        <option value="">请选择学历</option>
+                        <option value="本科">本科</option>
+                        <option value="硕士">硕士</option>
+                        <option value="博士">博士</option>
+                        <option value="大专">大专</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">工作经历</label>
+                    <textarea id="experience" name="experience" placeholder="请简述您的工作经历"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">技能特长</label>
+                    <textarea id="skills" name="skills" placeholder="请列出您的技能特长"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>简历文件 *</label>
+                    <div class="file-upload" id="fileUpload">
+                        <input type="file" id="file" name="file" accept=".pdf,.doc,.docx" required>
+                        <div class="file-upload-icon">📁</div>
+                        <div class="file-upload-text">点击或拖拽上传简历</div>
+                        <div class="file-upload-hint">支持 PDF、Word 格式，最大 10MB</div>
+                    </div>
+                    <div class="selected-file" id="selectedFile"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">提交简历</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>正在提交，请稍候...</p>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <h2 class="success-title">提交成功！</h2>
+                <p class="success-text">您的简历已成功发送至公司邮箱</p>
+                <button class="back-btn" onclick="location.reload()">继续投递</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        let selectedFile = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCompanies();
+            setupFileUpload();
+            setupFormSubmit();
+        });
+
+        async function loadCompanies() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/companies`);
+                const companies = await response.json();
+                
+                const select = document.getElementById('companyIds');
+                select.innerHTML = '';
+                
+                companies.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.id;
+                    option.textContent = company.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showError('加载公司列表失败，请刷新页面重试');
+            }
+        }
+
+        function setupFileUpload() {
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('file');
+            const selectedFileDiv = document.getElementById('selectedFile');
+
+            fileUpload.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        showError('文件大小不能超过 10MB');
+                        fileInput.value = '';
+                        return;
+                    }
+                    
+                    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                    if (!validTypes.includes(file.type)) {
+                        showError('只支持 PDF 或 Word 格式的文件');
+                        fileInput.value = '';
+                        return;
+                    }
+                    
+                    selectedFile = file;
+                    selectedFileDiv.textContent = `已选择: ${file.name} (${formatFileSize(file.size)})`;
+                    selectedFileDiv.style.display = 'block';
+                }
+            });
+
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.style.background = '#e8ebff';
+            });
+
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.style.background = '#f8f9ff';
+            });
+
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.style.background = '#f8f9ff';
+                
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    fileInput.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+        }
+
+        function setupFormSubmit() {
+            const form = document.getElementById('form');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('companyIds', document.getElementById('companyIds').value);
+                formData.append('name', document.getElementById('name').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('position', document.getElementById('position').value);
+                formData.append('education', document.getElementById('education').value);
+                formData.append('experience', document.getElementById('experience').value);
+                formData.append('skills', document.getElementById('skills').value);
+                formData.append('file', selectedFile);
+
+                showLoading(true);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/resumes/submit`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showSuccess();
+                    } else {
+                        showError(result.message || '提交失败，请重试');
+                        showLoading(false);
+                    }
+                } catch (error) {
+                    showError('网络错误，请检查网络连接后重试');
+                    showLoading(false);
+                }
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            const form = document.getElementById('form');
+            const loading = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (show) {
+                form.style.display = 'none';
+                loading.style.display = 'block';
+            } else {
+                form.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+
+        function showSuccess() {
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            
+            loading.style.display = 'none';
+            successMessage.style.display = 'block';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
